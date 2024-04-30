@@ -6,21 +6,22 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, ViewSet
 
 from apps.core.models import History
+from apps.core.serializers import HistorySerializer
 
 
 # Create your views here.
 
 
-class NumberOneViewSet(ModelViewSet):
+class HistoryViewSet(ModelViewSet):
     queryset = History.objects.all()
+    serializer_class = HistorySerializer
 
 
-class NumberTwoViewSet(ViewSet):
+
+class HistoryTwoViewSet(ViewSet):
 
     @action(detail=False, methods=['post'])
-    def create(self, request, *args, **kwargs):
-        self.request.data
-        self.request.query_param
+    def create_history(self, request, *args, **kwargs):
         user_id = self.request.data.get('user', None)
         description = self.request.data.get('description', None)
         history = History.objects.create(user_id, description=description)
