@@ -3,7 +3,7 @@ import requests
 
 class ContactServiceConnector():
 
-    def send_ping(self, endpoint):
+    def send_ping(self, endpoint : str):
 
         response = requests.get(url=endpoint)
 
@@ -11,3 +11,10 @@ class ContactServiceConnector():
             return True
         else:
             return False
+
+
+    def create_contact(self,endpoint : str , data : dict):
+
+        response = requests.post(url=endpoint,data=data)
+
+        return response

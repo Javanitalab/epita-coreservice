@@ -17,11 +17,12 @@ Including another URLconf
 from django.urls import re_path, include
 from rest_framework.routers import DefaultRouter
 
-from apps.core.views import HistoryViewSet, HistoryTwoViewSet
+from apps.core.views import HistoryViewSet, HistoryTwoViewSet, ContactServiceViewSet
 
 router = DefaultRouter()
 router.register(r'history', HistoryViewSet, basename='history')
 router.register(r'history-two', HistoryTwoViewSet, basename='history-two')
+router.register(r'contacts', ContactServiceViewSet, basename='contacts')
 
 urlpatterns = [
     re_path(r'^', include(router.urls)),
