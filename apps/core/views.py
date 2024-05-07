@@ -43,7 +43,7 @@ class ContactServiceViewSet(ViewSet):
         endpoint = self.request.query_params.get('endpoint', None)
 
         contact_service = ContactService.objects.last()
-        contact_service_connector = ContactServiceConnector()
+        contact_service_connector = ContactServiceConnector(endpoint='http://localhost:8001')
         if contact_service.endpoint:
             success = contact_service_connector.send_ping(contact_service.endpoint)
             if success:
