@@ -1,11 +1,12 @@
 import requests
 
 
+
 class ContactServiceConnector():
 
-    def __init__(self, endpoint: str):
+    def __init__(self):
 
-        self.url = endpoint + '/contact/'
+        self.url = 'http://localhost:8001'
 
     def send_ping(self, endpoint: str):
 
@@ -37,5 +38,12 @@ class ContactServiceConnector():
     def retrieve_contact(self, params: dict):
 
         response = requests.get(url=self.url, params=params)
+
+        return response
+
+    def get_authorization_url(self):
+        response = requests.get(
+            url=self.url + '/outlook/get_authorization_url'
+        )
 
         return response

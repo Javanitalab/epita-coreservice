@@ -16,14 +16,23 @@ Including another URLconf
 """
 from django.urls import re_path, include
 from rest_framework.routers import DefaultRouter
+from rest_framework_nested import routers
 
-from apps.core.views import HistoryViewSet, HistoryTwoViewSet, ContactServiceViewSet
+from apps.core.views import HistoryViewSet, HistoryTwoViewSet, ContactServiceViewSet, OutlookServiceViewSet
 
 router = DefaultRouter()
 router.register(r'history', HistoryViewSet, basename='history')
 router.register(r'history-two', HistoryTwoViewSet, basename='history-two')
 router.register(r'contacts', ContactServiceViewSet, basename='contacts')
 
+contacts_router = routers.NestedSimpleRouter(router, r'contacts',)
+contacts_router.register(r'outlook', OutlookServiceViewSet,basename='outlook')
+
+outlook_router = routers.NestedSimpleRouter(contacts_router, r'outlook')
+outlook_router.register(r'outlook', OutlookServiceViewSet, basename='outlook')
+
 urlpatterns = [
     re_path(r'^', include(router.urls)),
+    re_path(r'^', include(contacts_router.urls)),
+    re_path(r'^', include(outlook_router.urls)),
 ]

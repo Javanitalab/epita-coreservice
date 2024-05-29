@@ -36,15 +36,22 @@ class HistoryTwoViewSet(ViewSet):
             })
 
 
-class ContactServiceViewSet(ViewSet):
+class ContactServiceViewSet(ModelViewSet):
 
-    @action(detail=False, methods=['get'])
+    def get_queryset(self):
+        return 1
+    @action(detail=False, methods=['post'])
     def create_contact(self, request, *args, **kwargs):
         endpoint = self.request.query_params.get('endpoint', None)
 
-        contact_service = ContactService.objects.last()
+        contact_services = ContactService.objects.filter(endpoint__isnull=False)
+        contact_service = None
+        if contact_services:
+            contact_service = contact_services.last()
+        else:
+            ContactService.objects.create(endpoint='http://localhost:8001', last_communication=datetime.datetime.now())
         contact_service_connector = ContactServiceConnector(endpoint='http://localhost:8001')
-        if contact_service.endpoint:
+        if contact_service and contact_service.endpoint:
             success = contact_service_connector.send_ping(contact_service.endpoint)
             if success:
                 ContactService.objects.create(last_communication=datetime.datetime.now(), endpoint=endpoint)
@@ -52,7 +59,21 @@ class ContactServiceViewSet(ViewSet):
                 ContactService.objects.create(last_communication=datetime.datetime.now(), endpoint=None)
                 return Response(status=503, data={'service not found'})
 
-            response = contact_service_connector.create_contact(contact_service.endpoint, self.request.data)
+            response = contact_service_connector.create_contact(
+                self.request.data)
 
-            return response
+            return Response(data=response.text, status=response.status_code)
         return Response(status=201)
+
+
+class OutlookServiceViewSet(ViewSet):
+    contact_connector = ContactServiceConnector()
+
+    @action(detail=False, methods=['get'])
+    def get_authorization_url(self, request, *args, **kwargs):
+        response = self.contact_connector.get_authorization_url()
+
+        return Response(
+            data=response.json(),
+            status=response.status_code
+        )
